@@ -108,7 +108,7 @@ namespace ProjectManagement.Controllers
         }
 
         [HttpPost("InviteRequests/{requestId}/{status}")]
-        public async Task<ActionResult<string>> ChangeRequestStatus(int requestId, string status)
+        public async Task<ActionResult<string>> ChangeRequestStatus([FromRoute] int requestId, [FromRoute] string status)
         {
             var username = User.FindFirstValue(ClaimTypes.Name);
             var user = await _context.Users.Where(u => u.Username == username).FirstOrDefaultAsync();
@@ -118,9 +118,17 @@ namespace ProjectManagement.Controllers
                 return NotFound("درخواستی یافت نشد");
 
             if (request.Status != "Pending")
-                return BadRequest("");
+                return BadRequest("درخواست قبلا رد یا پذیرفته شده است");
+            if (status != "Accepted" && status != "Rejected")
+                return BadRequest("مشخصات ارسال شده نادرست است");
 
-            return Ok();
+            request.Status = status;
+            if (request.Status == "Accepted")
+                user.TeamId = request.teamId;
+
+            await _context.SaveChangesAsync();
+
+            return Ok("تغییر وضعیت درخواست باموفقیت انجام شد");
         }
     }
 }

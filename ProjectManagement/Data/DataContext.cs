@@ -4,9 +4,17 @@ namespace ProjectManagement.Data
 {
     public class DataContext : DbContext
     {
-        public DataContext(DbContextOptions options) : base(options)
+        public DataContext(DbContextOptions<DataContext> options) : base(options)
         {
 
+        }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Team>().Navigation(t => t.Users).AutoInclude();
+            modelBuilder.Entity<Team>().Navigation(t => t.Projects).AutoInclude();
+
+            modelBuilder.Entity<User>().Navigation(u => u.InviteRequests).AutoInclude();
         }
 
         public DbSet<User> Users { get; set; }

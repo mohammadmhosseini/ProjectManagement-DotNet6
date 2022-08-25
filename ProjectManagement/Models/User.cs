@@ -23,7 +23,10 @@ namespace ProjectManagement.Models
         public string? ProfileImage { get; set; } = string.Empty;
         public string? Token { get; set; } = string.Empty;
         public Project? Project { get; set; }
-        public Team? Team { get; set; }
         public List<InviteRequest>? InviteRequests { get; set; }
+        [JsonIgnore]
+        public Team? Team { get; set; }
+        [ForeignKey("TeamId")]
+        public int? TeamId { get; set; }
     }
 }

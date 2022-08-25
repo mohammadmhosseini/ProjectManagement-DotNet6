@@ -26,7 +26,15 @@ namespace ProjectManagement.Controllers
         [AllowAnonymous]
         public async Task<ActionResult<List<Team>>> GetAllTeams()
         {
-            var teams = _context.Teams.ToList();
+            var teams = await _context.Teams.Include(t => t.Users).Select(t => new
+            {
+                t.Id,
+                t.Name,
+                t.Description,
+                t.Username,
+                t.OwnerId
+            }).ToListAsync();
+
             if (!teams.Any())
                 return NotFound("تیمی یافت نشد");
 
@@ -101,6 +109,21 @@ namespace ProjectManagement.Controllers
             return Ok("تیم باموفقیت حذف شد");
         }
         #endregion
+
+        [HttpGet("UsersOfTeam/{Id}")]
+        [AllowAnonymous]
+        public async Task<ActionResult<List<User>>> GetUsersOfTeam(int Id)
+        {
+            var team = await _context.Teams.FindAsync(Id);
+            if (team == null)
+                return NotFound("تیمی یافت نشد");
+
+            var users = team.Users.ToList();
+            if (!users.Any())
+                return BadRequest("کاربری یافت نشد");
+            
+            return Ok(users);
+        }
 
         [HttpPost("invite/teamId/username")]
         public async Task<ActionResult<string>> InviteUserToTeam(int teamId, string username)

@@ -26,7 +26,7 @@ namespace ProjectManagement.Controllers
 
         [HttpPost("register")]
         [ProducesResponseType(StatusCodes.Status201Created)]
-        public async Task<ActionResult<PublicResponse>> Register(RegisterUserDto request)
+        public async Task<ActionResult<PublicResponse>> Register([FromForm] RegisterUserDto request)
         {
             var user = await _context.Users.Where(u => u.Username == request.Username).FirstOrDefaultAsync();
             if (user != null)
@@ -54,7 +54,7 @@ namespace ProjectManagement.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<ActionResult<LoginSchema>> Login(LoginUserDto request)
+        public async Task<ActionResult<LoginSchema>> Login([FromForm] LoginUserDto request)
         {
             var user = await _context.Users.Where(u => u.Username == request.Username).FirstOrDefaultAsync();
             if(user == null)
